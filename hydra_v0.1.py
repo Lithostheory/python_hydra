@@ -46,7 +46,7 @@ def guardmode():
             time.sleep(0.5)
     
     print("%i - Im guarding %i and %i"%(i,main_id,buddy_pid))
-    time.sleep(1.0)
+    time.sleep(5.0)
     
     while True:
         if psutil.pid_exists(main_id) and psutil.pid_exists(buddy_pid):
@@ -100,7 +100,14 @@ def set_up_guardmode(N):
         os.system('./%s webchecker.py 1 %i %i %s &'%(pythonname,main_id,i,savefile))
         time.sleep(0.05)
         os.system('rm %s'%(pythonname))
-        guard_ids.append(getpid(pythonname))       
+        while True:
+            try:
+                pid = getpid(pythonname)
+                break
+            except Exception:
+                time.sleep(0.05)
+                continue
+        guard_ids.append(pid)       
     
     print('making random ids')
     random_ids = random_choice(N)
@@ -204,6 +211,10 @@ def webcheck():
     return
 
 
+
+
+
+
 mode = sys.argv[1]
 if mode == '1':
     guardmode()
@@ -211,6 +222,67 @@ else:
     print('entering mainmode')
     set_up_guardmode(50)
     webcheck()
+
+
+
+
+
+
+
+
+
+
+
+
+
+#now = datetime.now()
+#dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+#printtxt = 'problem!!!!!!!!!! %s %s %s %s'%(str(i),str(psutil.pid_exists(main_id)),str(psutil.pid_exists(buddy_pid)),dt_string)
+#os.system('echo %s > %s'%(printtxt,'shit_'+randstring(10)))
+#os.system('systemctl reboot')
+
+
+'''
+        try:
+            os.system('systemctl reboot')
+            exit()
+        except Exception:
+'''
+
+
+
+
+
+
+
+
+
+
+'''
+url = 'https://raw.githubusercontent.com/Lithostheory/python_hydra/main/hydra_v0.1.py'
+response = urllib2.urlopen(url,timeout=5)
+content = response.read()
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
