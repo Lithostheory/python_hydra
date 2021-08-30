@@ -97,7 +97,7 @@ def set_up_guardmode(N):
         print('%i of %i'%(i,N))
         pythonname = 'guard_'+randstring(5)
         os.system('ln -s /usr/bin/python2.7 %s'%(pythonname))
-        os.system('./%s webchecker.py 1 %i %i %s &'%(pythonname,main_id,i,savefile))
+        os.system('./%s mainfile_webcheck.py 1 %i %i %s &'%(pythonname,main_id,i,savefile))
         time.sleep(0.05)
         os.system('rm %s'%(pythonname))
         while True:
