@@ -247,7 +247,7 @@ def webcheck():
             except Exception:
                 pass
         
-        #os.system('killall firefox -9')
+        os.system('killall firefox -9')
         
         print('loop')
         
