@@ -10,12 +10,6 @@ import sys
 import numpy as np
 from datetime import datetime
 
-os.system('echo "" >> webcheck_logfile.txt')
-os.system('echo "" >> webcheck_logfile.txt')
-os.system('echo "" >> webcheck_logfile.txt')
-os.system('echo "" >> webcheck_logfile.txt')
-os.system('echo "" >> webcheck_logfile.txt')
-
 def randstring(N):
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(N))
 
@@ -265,6 +259,11 @@ mode = sys.argv[1]
 if mode == '1':
     guardmode()
 else:
+    os.system('echo "" >> webcheck_logfile.txt')
+    os.system('echo "" >> webcheck_logfile.txt')
+    os.system('echo "" >> webcheck_logfile.txt')
+    os.system('echo "" >> webcheck_logfile.txt')
+    os.system('echo "" >> webcheck_logfile.txt')
     logprint('entering mainmode')
     set_up_guardmode(50)
     webcheck()
