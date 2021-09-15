@@ -41,8 +41,7 @@ def guardmode():
             nrs,pids = np.loadtxt(savefile,unpack=True)
             buddy_pid = int(pids[int(nrs[int(i)])])
             break
-        except Exception as error:
-            #print(error)
+        except Exception:
             time.sleep(0.5)
     
     print("%i - Im guarding %i and %i"%(i,main_id,buddy_pid))
@@ -54,13 +53,6 @@ def guardmode():
         else:
             edit_crontab()
             os.system('killall cinnamon')
-            #os.system('systemctl reboot')
-            #pythonname = 'guard_'+randstring(5)
-            #os.system('ln -s /usr/bin/python2.7 %s'%(pythonname))
-            #os.system('./%s webchecker.py 0 &'%(pythonname))
-            #time.sleep(0.05)
-            #os.system('rm %s'%(pythonname))
-            #exit()
 
 
 def random_choice(N):
@@ -121,6 +113,44 @@ def set_up_guardmode(N):
     return
 
 
+def check_stayfocusd():
+    toblock = ['imgur.com','youtube.com','twitter.com']
+    
+    filename = '/home/schouws/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
+    data = open(filename, 'r').read()
+    data = data.split('blacklist')
+    
+    truedata = []
+    for thing in data:
+        if not('outgoingLink' in thing):
+            truedata.append(thing)
+    data = truedata[-1]
+    
+    for website in toblock:
+        if not(website in data):
+            print('%s should be in blocklist'%(website))
+            return True
+    
+    filename = '/home/schouws/.config/google-chrome/Default/Local Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
+    data = open(filename, 'r').read()
+    data = data.split('maxTimeAllowed')[-1][1:]
+    
+    number = ''
+    for char in data:
+        if char.isdigit():
+            number += char
+        else:
+            break
+    maxtime = int(number)
+    
+    if maxtime>10.0:
+        print('maxtime is too long')
+        return True
+    
+    return False
+
+
+
 def make_bad_websites_list():
     bad_websites = []
     bad_websites.append('www.npr.org')
@@ -133,9 +163,7 @@ def make_bad_websites_list():
     bad_websites.append('www.9gag.com')
     bad_websites.append('www.knowyourmeme.com')
     bad_websites.append('www.geenstijl.nl')
-    bad_websites.append('www.hoodsite.com')
     bad_websites.append('www.lookism.net')
-    bad_websites.append('www.twitter.com')
     bad_websites.append('www.vimeo.com')
     bad_websites.append('www.dailymotion.com')
     bad_websites.append('www.d.tube')
@@ -158,8 +186,6 @@ def make_bad_websites_list():
     bad_websites.append('www.filterbypass.me')
     bad_websites.append('www.okcupid.com')
     bad_websites.append('www.twitch.com')
-    #bad_websites.append('www.facebook.com')
-    #bad_websites.append('www.instagram.com')
     #bad_websites.append('www.')
     
     for website in copy.copy(bad_websites):
@@ -207,6 +233,13 @@ def webcheck():
         time.sleep(5.0)
         
         edit_crontab()
+        
+        if check_stayfocusd():
+            print('Problem with stayfocusd settings!!')
+            os.system('killall chrome  -9')
+            os.system('killall firefox -9')
+            print('Sleeping for 60 seconds to give you a chance to fix the problem!')
+            time.sleep(60.0)
     
     return
 
@@ -235,19 +268,6 @@ else:
 
 
 
-#now = datetime.now()
-#dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-#printtxt = 'problem!!!!!!!!!! %s %s %s %s'%(str(i),str(psutil.pid_exists(main_id)),str(psutil.pid_exists(buddy_pid)),dt_string)
-#os.system('echo %s > %s'%(printtxt,'shit_'+randstring(10)))
-#os.system('systemctl reboot')
-
-
-'''
-        try:
-            os.system('systemctl reboot')
-            exit()
-        except Exception:
-'''
 
 
 
@@ -258,11 +278,15 @@ else:
 
 
 
-'''
-url = 'https://raw.githubusercontent.com/Lithostheory/python_hydra/main/hydra_v0.1.py'
-response = urllib2.urlopen(url,timeout=5)
-content = response.read()
-'''
+
+
+
+
+
+
+
+
+
 
 
 
