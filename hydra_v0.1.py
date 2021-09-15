@@ -9,6 +9,7 @@ import string
 import sys
 import numpy as np
 from datetime import datetime
+import json
 
 def randstring(N):
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(N))
@@ -120,6 +121,20 @@ def set_up_guardmode(N):
 
 def check_stayfocusd():
     try:
+        filename = '/home/schouws/.config/google-chrome/Default/Preferences'
+        
+        with open(filename, "r") as jsonFile:
+            data = json.load(jsonFile)
+            isactive = data['extensions']['settings']['laankejkbhbdhmipfmgcngdelahlfoji']['state']
+            incognito = data['extensions']['settings']['laankejkbhbdhmipfmgcngdelahlfoji']['incognito']
+            
+            if not(isactive==1):
+                logprint('stayfocusd extension should be active')
+                return True
+            elif not(str(incognito)=='True'):
+                logprint('stayfocusd should be active in incognito mode')
+                return True
+        
         toblock = ['imgur.com','youtube.com','twitter.com','ted.com']
         
         filename = '/home/schouws/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
@@ -267,6 +282,7 @@ else:
     logprint('entering mainmode')
     set_up_guardmode(50)
     webcheck()
+
 
 
 
