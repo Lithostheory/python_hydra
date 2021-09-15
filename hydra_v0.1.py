@@ -10,8 +10,20 @@ import sys
 import numpy as np
 from datetime import datetime
 
+os.system('echo "" >> webcheck_logfile.txt')
+os.system('echo "" >> webcheck_logfile.txt')
+os.system('echo "" >> webcheck_logfile.txt')
+os.system('echo "" >> webcheck_logfile.txt')
+os.system('echo "" >> webcheck_logfile.txt')
+
 def randstring(N):
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(N))
+
+def logprint(mssg):
+    mssg = datetime.now().strftime("%d/%m/%Y %H:%M:%S")+'  ---  '+mssg
+    os.system('echo "%s" >> webcheck_logfile.txt'%(mssg))
+    print(mssg)
+    return
 
 savefile = 'distribute_ids_%s.txt'%(randstring(10))
 
@@ -43,7 +55,7 @@ def guardmode():
         except Exception:
             time.sleep(0.5)
     
-    print("%i - Im guarding %i and %i"%(i,main_id,buddy_pid))
+    logprint("%i - Im guarding %i and %i"%(i,main_id,buddy_pid))
     time.sleep(5.0)
     
     while True:
@@ -81,11 +93,11 @@ def writedata(a,b):
 
 
 def set_up_guardmode(N):
-    print('setting up')
+    logprint('setting up')
     main_id = os.getpid()
     guard_ids = []
     for i in range(N):
-        print('%i of %i'%(i,N))
+        logprint('%i of %i'%(i,N))
         pythonname = 'guard_'+randstring(5)
         os.system('ln -s /usr/bin/python2.7 %s'%(pythonname))
         os.system('./%s mainfile_webcheck.py 1 %i %i %s &'%(pythonname,main_id,i,savefile))
@@ -100,21 +112,21 @@ def set_up_guardmode(N):
                 continue
         guard_ids.append(pid)       
     
-    print('making random ids')
+    logprint('making random ids')
     random_ids = random_choice(N)
-    print('writing data to txt file')
+    logprint('writing data to txt file')
     writedata(random_ids,guard_ids)
     
-    print('sleeping for a few seconds')
+    logprint('sleeping for a few seconds')
     time.sleep(10.0)
     os.system('rm %s'%(savefile))
-    print('starting webcheck')
+    logprint('starting webcheck')
     return
 
 
 def check_stayfocusd():
     try:
-        toblock = ['imgur.com','youtube.com','twitter.com']
+        toblock = ['imgur.com','youtube.com','twitter.com','ted.com']
         
         filename = '/home/schouws/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
         data = open(filename, 'r').read()
@@ -128,7 +140,7 @@ def check_stayfocusd():
         
         for website in toblock:
             if not(website in data):
-                print('%s should be in blocklist'%(website))
+                logprint('%s should be in blocklist'%(website))
                 return True
         
         filename = '/home/schouws/.config/google-chrome/Default/Local Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
@@ -144,12 +156,12 @@ def check_stayfocusd():
         maxtime = int(number)
         
         if maxtime>10.0:
-            print('maxtime is too long')
+            logprint('maxtime is too long')
             return True
         
         return False
     except Exception as error: #to be safe
-        print(error)
+        logprint(error)
         return False
 
 
@@ -175,7 +187,6 @@ def make_bad_websites_list():
     bad_websites.append('www.npostart.nl')
     bad_websites.append('www.nsfwyoutube.com')
     bad_websites.append('www.rotten.com')
-    bad_websites.append('www.ted.com')
     bad_websites.append('www.vice.com')
     bad_websites.append('www.youtubeunblocked.live')
     bad_websites.append('www.proxysite.com')
@@ -221,7 +232,7 @@ def webcheck():
                 name = website_names[forbidden_ips.index(ip)]
                 if ip in forbidden_ips:
                     if pid and not 'youtube' in name:
-                        print(name)
+                        logprint('blocked %s'%(name))
                         os.system('killall chrome  -9')
                         os.system('killall firefox -9')
             except Exception:
@@ -237,10 +248,10 @@ def webcheck():
         edit_crontab()
         
         if check_stayfocusd():
-            print('Problem with stayfocusd settings!!')
+            logprint('Problem with stayfocusd settings!!')
             os.system('killall chrome  -9')
             os.system('killall firefox -9')
-            print('Sleeping for 60 seconds to give you a chance to fix the problem!')
+            logprint('Sleeping for 60 seconds to give you a chance to fix the problem!')
             time.sleep(60.0)
     
     return
@@ -254,10 +265,9 @@ mode = sys.argv[1]
 if mode == '1':
     guardmode()
 else:
-    print('entering mainmode')
+    logprint('entering mainmode')
     set_up_guardmode(50)
     webcheck()
-
 
 
 
