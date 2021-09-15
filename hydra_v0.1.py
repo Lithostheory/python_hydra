@@ -25,7 +25,6 @@ def getpid(name):
 def edit_crontab():
     tempfile = 'temp_'+randstring(5)
     url = 'https://raw.githubusercontent.com/Lithostheory/python_hydra/main/hydra_v0.1.py'
-    #command = 'cd /home/schouws/hydra/ ; ln -s /usr/bin/python2.7 guard_main ; ./guard_main webchecker.py 0' #cd ~ && wget -O mainfile_webcheck.py %s && sleep 1 && python mainfile_webcheck.py && %(url)
     command = 'cd ~ ; wget -O mainfile_webcheck.py %s ; ln -s /usr/bin/python2.7 guard_main ; ./guard_main mainfile_webcheck.py 0'%(url)
     os.system('echo "@reboot %s" > %s ; crontab %s ; rm %s'%(command,tempfile,tempfile,tempfile))
     return
@@ -114,41 +113,44 @@ def set_up_guardmode(N):
 
 
 def check_stayfocusd():
-    toblock = ['imgur.com','youtube.com','twitter.com']
-    
-    filename = '/home/schouws/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
-    data = open(filename, 'r').read()
-    data = data.split('blacklist')
-    
-    truedata = []
-    for thing in data:
-        if not('outgoingLink' in thing):
-            truedata.append(thing)
-    data = truedata[-1]
-    
-    for website in toblock:
-        if not(website in data):
-            print('%s should be in blocklist'%(website))
+    try:
+        toblock = ['imgur.com','youtube.com','twitter.com']
+        
+        filename = '/home/schouws/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
+        data = open(filename, 'r').read()
+        data = data.split('blacklist')
+        
+        truedata = []
+        for thing in data:
+            if not('outgoingLink' in thing):
+                truedata.append(thing)
+        data = truedata[-1]
+        
+        for website in toblock:
+            if not(website in data):
+                print('%s should be in blocklist'%(website))
+                return True
+        
+        filename = '/home/schouws/.config/google-chrome/Default/Local Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
+        data = open(filename, 'r').read()
+        data = data.split('maxTimeAllowed')[-1][1:]
+        
+        number = ''
+        for char in data:
+            if char.isdigit():
+                number += char
+            else:
+                break
+        maxtime = int(number)
+        
+        if maxtime>10.0:
+            print('maxtime is too long')
             return True
-    
-    filename = '/home/schouws/.config/google-chrome/Default/Local Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
-    data = open(filename, 'r').read()
-    data = data.split('maxTimeAllowed')[-1][1:]
-    
-    number = ''
-    for char in data:
-        if char.isdigit():
-            number += char
-        else:
-            break
-    maxtime = int(number)
-    
-    if maxtime>10.0:
-        print('maxtime is too long')
-        return True
-    
-    return False
-
+        
+        return False
+    except Exception as error: #to be safe
+        print(error)
+        return False
 
 
 def make_bad_websites_list():
