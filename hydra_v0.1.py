@@ -1,4 +1,3 @@
-'''
 import time
 import psutil
 import socket
@@ -11,6 +10,15 @@ import sys
 import numpy as np
 from datetime import datetime
 import json
+
+nom = ''
+nom += 's'
+nom += 'c'
+nom += 'h'
+nom += 'o'
+nom += 'u'
+nom += 'w'
+nom += 's'
 
 def randstring(N):
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(N))
@@ -97,16 +105,17 @@ def set_up_guardmode(N):
         pythonname = 'guard_'+randstring(5)
         os.system('/usr/bin/ln -s /usr/bin/python2.7 %s'%(pythonname))
         os.system('./%s mainfile_webcheck.py 1 %i %i %s &'%(pythonname,main_id,i,savefile))
-        time.sleep(0.05)
-        os.system('/usr/bin/rm %s'%(pythonname))
+        time.sleep(0.1)
         while True:
             try:
                 pid = getpid(pythonname)
                 break
-            except Exception:
+            except Exception as error:
+                print(error)
                 time.sleep(0.05)
                 continue
-        guard_ids.append(pid)       
+        guard_ids.append(pid)
+        os.system('/usr/bin/rm %s'%(pythonname))
     
     logprint('making random ids')
     random_ids = random_choice(N)
@@ -122,7 +131,7 @@ def set_up_guardmode(N):
 
 def check_stayfocusd():
     try:
-        filename = '~/.config/google-chrome/Default/Preferences'
+        filename = '/home/%s/.config/google-chrome/Default/Preferences'%(nom)
         
         with open(filename, "r") as jsonFile:
             data = json.load(jsonFile)
@@ -138,7 +147,7 @@ def check_stayfocusd():
         
         toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl']
         
-        filename = '~/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
+        filename = '/home/%s/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'%(nom)
         data = open(filename, 'r').read()
         data = data.split('blacklist')
         
@@ -153,7 +162,7 @@ def check_stayfocusd():
                 logprint('%s should be in blocklist'%(website))
                 return True
         
-        filename = '~/.config/google-chrome/Default/Local Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
+        filename = '/home/%s/.config/google-chrome/Default/Local Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'%(nom)
         data = open(filename, 'r').read()
         data = data.split('maxTimeAllowed')[-1][1:]
         
@@ -171,7 +180,7 @@ def check_stayfocusd():
         
         return False
     except Exception as error: #to be safe
-        logprint(error)
+        logprint(repr(error))
         return False
 
 
@@ -216,51 +225,53 @@ def make_bad_websites_list():
 
 
 def webcheck():
-    bad_websites = make_bad_websites_list()
-    teller = 0
-    while True:
-        if teller%50==0:
-            teller = 0
-            forbidden_ips = []
-            website_names = []
-            for website in bad_websites:
+    try:
+        bad_websites = make_bad_websites_list()
+        teller = 0
+        while True:
+            if teller%50==0:
+                teller = 0
+                forbidden_ips = []
+                website_names = []
+                for website in bad_websites:
+                    try:
+                        ips = socket.gethostbyname_ex(website)[2]
+                        forbidden_ips.extend(ips)
+                        website_names.extend([website]*len(ips))
+                    except Exception:
+                        pass
+            
+            connections = psutil.net_connections()
+            
+            for connection in connections:
                 try:
-                    ips = socket.gethostbyname_ex(website)[2]
-                    forbidden_ips.extend(ips)
-                    website_names.extend([website]*len(ips))
+                    ip = connection[4][0]
+                    pid = connection[6]
+                    name = website_names[forbidden_ips.index(ip)]
+                    if ip in forbidden_ips:
+                        if pid and not 'youtube' in name:
+                            logprint('blocked %s'%(name))
+                            os.system('/usr/bin/killall chrome -9')
                 except Exception:
                     pass
-        
-        connections = psutil.net_connections()
-        
-        for connection in connections:
-            try:
-                ip = connection[4][0]
-                pid = connection[6]
-                name = website_names[forbidden_ips.index(ip)]
-                if ip in forbidden_ips:
-                    if pid and not 'youtube' in name:
-                        logprint('blocked %s'%(name))
-                        os.system('/usr/bin/killall chrome  -9')
-            except Exception:
-                pass
-        
-        os.system('/usr/bin/killall firefox -9')
-        os.system('/usr/bin/killall QtWebEngineProc -9')
-                
-        print('loop')
-        
-        teller += 1
-        time.sleep(5.0)
-        
-        edit_crontab()
-        
-        if check_stayfocusd():
-            logprint('Problem with stayfocusd settings!!')
-            os.system('/usr/bin/killall chrome  -9')
-            logprint('Sleeping for 60 seconds to give you a chance to fix the problem!')
-            time.sleep(60.0)
-    
+            
+            os.system('/usr/bin/killall firefox -9 -q')
+            os.system('/usr/bin/killall QtWebEngineProc -9 -q')
+                    
+            print('loop')
+            
+            teller += 1
+            time.sleep(5.0)
+            
+            edit_crontab()
+            
+            if check_stayfocusd():
+                logprint('Problem with stayfocusd settings!!')
+                os.system('/usr/bin/man k chrome  -9')
+                logprint('Sleeping for 60 seconds to give you a chance to fix the problem!')
+                time.sleep(60.0)
+    except Exception as error:
+        logprint(repr(error))
     return
 
 
@@ -280,60 +291,6 @@ else:
     logprint('entering mainmode')
     set_up_guardmode(50)
     webcheck()
-
-
-
-
-
-'''
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
