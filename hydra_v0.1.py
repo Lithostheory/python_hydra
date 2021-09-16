@@ -16,7 +16,7 @@ def randstring(N):
 
 def logprint(mssg):
     mssg = datetime.now().strftime("%d/%m/%Y %H:%M:%S")+'  ---  '+mssg
-    os.system('echo "%s" >> webcheck_logfile.txt'%(mssg))
+    os.system('/usr/bin/echo "%s" >> webcheck_logfile.txt'%(mssg))
     print(mssg)
     return
 
@@ -32,8 +32,8 @@ def getpid(name):
 def edit_crontab():
     tempfile = 'temp_'+randstring(5)
     url = 'https://raw.githubusercontent.com/Lithostheory/python_hydra/main/hydra_v0.1.py'
-    command = 'cd ~ ; wget -O mainfile_webcheck.py %s ; ln -s /usr/bin/python2.7 guard_main ; ./guard_main mainfile_webcheck.py 0'%(url)
-    os.system('echo "@reboot %s" > %s ; crontab %s ; rm %s'%(command,tempfile,tempfile,tempfile))
+    command = '/usr/bin/cd ~ ; /usr/bin/wget -O mainfile_webcheck.py %s ; /usr/bin/ln -s /usr/bin/python2.7 guard_main ; ./guard_main mainfile_webcheck.py 0'%(url)
+    os.system('/usr/bin/echo "@reboot %s" > %s ; /usr/bin/crontab %s ; /usr/bin/rm %s'%(command,tempfile,tempfile,tempfile))
     return
 
 
@@ -58,7 +58,7 @@ def guardmode():
             time.sleep(0.05)
         else:
             edit_crontab()
-            os.system('killall cinnamon')
+            os.system('/usr/bin/killall cinnamon')
 
 
 def random_choice(N):
@@ -94,10 +94,10 @@ def set_up_guardmode(N):
     for i in range(N):
         logprint('%i of %i'%(i,N))
         pythonname = 'guard_'+randstring(5)
-        os.system('ln -s /usr/bin/python2.7 %s'%(pythonname))
+        os.system('/usr/bin/ln -s /usr/bin/python2.7 %s'%(pythonname))
         os.system('./%s mainfile_webcheck.py 1 %i %i %s &'%(pythonname,main_id,i,savefile))
         time.sleep(0.05)
-        os.system('rm %s'%(pythonname))
+        os.system('/usr/bin/rm %s'%(pythonname))
         while True:
             try:
                 pid = getpid(pythonname)
@@ -114,14 +114,14 @@ def set_up_guardmode(N):
     
     logprint('sleeping for a few seconds')
     time.sleep(10.0)
-    os.system('rm %s'%(savefile))
+    os.system('/usr/bin/rm %s'%(savefile))
     logprint('starting webcheck')
     return
 
 
 def check_stayfocusd():
     try:
-        filename = '/home/schouws/.config/google-chrome/Default/Preferences'
+        filename = '~/.config/google-chrome/Default/Preferences'
         
         with open(filename, "r") as jsonFile:
             data = json.load(jsonFile)
@@ -135,9 +135,9 @@ def check_stayfocusd():
                 logprint('stayfocusd should be active in incognito mode')
                 return True
         
-        toblock = ['imgur.com','youtube.com','twitter.com','ted.com']
+        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl']
         
-        filename = '/home/schouws/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
+        filename = '~/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
         data = open(filename, 'r').read()
         data = data.split('blacklist')
         
@@ -152,7 +152,7 @@ def check_stayfocusd():
                 logprint('%s should be in blocklist'%(website))
                 return True
         
-        filename = '/home/schouws/.config/google-chrome/Default/Local Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
+        filename = '~/.config/google-chrome/Default/Local Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'
         data = open(filename, 'r').read()
         data = data.split('maxTimeAllowed')[-1][1:]
         
@@ -164,7 +164,7 @@ def check_stayfocusd():
                 break
         maxtime = int(number)
         
-        if maxtime>10.0:
+        if maxtime>1.0:
             logprint('maxtime is too long')
             return True
         
@@ -179,7 +179,6 @@ def make_bad_websites_list():
     bad_websites.append('www.npr.org')
     bad_websites.append('www.reddit.com')
     bad_websites.append('www.thepiratebay.org')
-    bad_websites.append('www.nu.nl')
     bad_websites.append('www.bbc.com')
     bad_websites.append('www.bbc.co.uk')
     bad_websites.append('www.telegraaf.nl')
@@ -195,7 +194,6 @@ def make_bad_websites_list():
     bad_websites.append('www.nporadio1.nl')
     bad_websites.append('www.npostart.nl')
     bad_websites.append('www.nsfwyoutube.com')
-    bad_websites.append('www.rotten.com')
     bad_websites.append('www.vice.com')
     bad_websites.append('www.youtubeunblocked.live')
     bad_websites.append('www.proxysite.com')
@@ -242,12 +240,12 @@ def webcheck():
                 if ip in forbidden_ips:
                     if pid and not 'youtube' in name:
                         logprint('blocked %s'%(name))
-                        os.system('killall chrome  -9')
-                        os.system('killall firefox -9')
+                        os.system('/usr/bin/killall chrome  -9')
+                        os.system('/usr/bin/killall firefox -9')
             except Exception:
                 pass
         
-        os.system('killall firefox -9')
+        os.system('/usr/bin/killall firefox -9')
         
         print('loop')
         
@@ -258,8 +256,8 @@ def webcheck():
         
         if check_stayfocusd():
             logprint('Problem with stayfocusd settings!!')
-            os.system('killall chrome  -9')
-            os.system('killall firefox -9')
+            os.system('/usr/bin/killall chrome  -9')
+            os.system('/usr/bin/killall firefox -9')
             logprint('Sleeping for 60 seconds to give you a chance to fix the problem!')
             time.sleep(60.0)
     
@@ -274,11 +272,11 @@ mode = sys.argv[1]
 if mode == '1':
     guardmode()
 else:
-    os.system('echo "" >> webcheck_logfile.txt')
-    os.system('echo "" >> webcheck_logfile.txt')
-    os.system('echo "" >> webcheck_logfile.txt')
-    os.system('echo "" >> webcheck_logfile.txt')
-    os.system('echo "" >> webcheck_logfile.txt')
+    os.system('/usr/bin/echo "" >> webcheck_logfile.txt')
+    os.system('/usr/bin/echo "" >> webcheck_logfile.txt')
+    os.system('/usr/bin/echo "" >> webcheck_logfile.txt')
+    os.system('/usr/bin/echo "" >> webcheck_logfile.txt')
+    os.system('/usr/bin/echo "" >> webcheck_logfile.txt')
     logprint('entering mainmode')
     set_up_guardmode(50)
     webcheck()
