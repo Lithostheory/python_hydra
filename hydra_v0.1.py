@@ -241,12 +241,12 @@ def webcheck():
                     if pid and not 'youtube' in name:
                         logprint('blocked %s'%(name))
                         os.system('/usr/bin/killall chrome  -9')
-                        os.system('/usr/bin/killall firefox -9')
             except Exception:
                 pass
         
         os.system('/usr/bin/killall firefox -9')
-        
+        os.system('/usr/bin/killall QtWebEngineProc -9')
+                
         print('loop')
         
         teller += 1
@@ -257,7 +257,6 @@ def webcheck():
         if check_stayfocusd():
             logprint('Problem with stayfocusd settings!!')
             os.system('/usr/bin/killall chrome  -9')
-            os.system('/usr/bin/killall firefox -9')
             logprint('Sleeping for 60 seconds to give you a chance to fix the problem!')
             time.sleep(60.0)
     
