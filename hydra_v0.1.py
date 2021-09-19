@@ -3,13 +3,13 @@ import psutil
 import socket
 import os
 import copy
-#import urllib2
 import random
 import string
 import sys
 import numpy as np
 from datetime import datetime
 import json
+import commands
 
 nom = ''
 nom += 's'
@@ -178,6 +178,22 @@ def check_stayfocusd():
             logprint('maxtime is too long')
             return True
         
+        filename = '/home/%s/.config/google-chrome/Default/Local Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'%(nom)
+        data = open(filename, 'r').read()
+        data = data.split('elapsedTime')[-1][1:]
+        
+        number = ''
+        for char in data:
+            if char.isdigit():
+                number += char
+            else:
+                break
+        usedtime = int(number)
+        
+        if usedtime!=60:
+            logprint('Still %i seconds available today, make this zero'%(maxtime*60 - usedtime))
+            return True
+        
         return False
     except Exception as error: #to be safe
         logprint(repr(error))
@@ -257,19 +273,22 @@ def webcheck():
             
             os.system('/usr/bin/killall firefox -9 -q')
             os.system('/usr/bin/killall QtWebEngineProc -9 -q')
-                    
-            print('loop')
             
-            teller += 1
-            time.sleep(5.0)
-            
-            edit_crontab()
+            hostnames = ['dobbe.strw.leidenuniv.nl','beerze.strw.leidenuniv.nl']
+            for hostname in hostnames:
+                commands.getstatusoutput("/usr/bin/ssh -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o PreferredAuthentications=publickey %s '/usr/bin/killall firefox -9 -q ; /usr/bin/killall chrome -9 -q  ; /usr/bin/killall QtWebEngineProc -9 -q ; /usr/bin/killall links -9 -q'"%(hostname))
             
             if check_stayfocusd():
                 logprint('Problem with stayfocusd settings!!')
-                os.system('/usr/bin/man k chrome  -9')
+                os.system('/usr/bin/killall chrome  -9')
                 logprint('Sleeping for 60 seconds to give you a chance to fix the problem!')
                 time.sleep(60.0)
+                        
+            teller += 1
+            time.sleep(20.0)
+            
+            edit_crontab()
+            
     except Exception as error:
         logprint(repr(error))
     return
