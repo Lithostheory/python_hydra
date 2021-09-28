@@ -3,6 +3,7 @@ import psutil
 import socket
 import os
 import copy
+#import urllib2
 import random
 import string
 import sys
@@ -145,7 +146,7 @@ def check_stayfocusd():
                 logprint('stayfocusd should be active in incognito mode')
                 return True
         
-        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl']
+        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live']
         
         filename = '/home/%s/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'%(nom)
         data = open(filename, 'r').read()
@@ -190,8 +191,9 @@ def check_stayfocusd():
                 break
         usedtime = int(number)
         
-        if usedtime!=60:
-            logprint('Still %i seconds available today, make this zero'%(maxtime*60 - usedtime))
+        available = maxtime*60 - usedtime
+        if available>1:
+            logprint('Still %i seconds available today, make this zero'%(available))
             return True
         
         return False
@@ -275,8 +277,11 @@ def webcheck():
             os.system('/usr/bin/killall QtWebEngineProc -9 -q')
             
             hostnames = ['dobbe.strw.leidenuniv.nl','beerze.strw.leidenuniv.nl']
+            for i in range(20):
+                hostnames.append('pczaal%i.strw.leidenuniv.nl'%(i+1))
+            
             for hostname in hostnames:
-                commands.getstatusoutput("/usr/bin/ssh -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o PreferredAuthentications=publickey %s '/usr/bin/killall firefox -9 -q ; /usr/bin/killall chrome -9 -q  ; /usr/bin/killall QtWebEngineProc -9 -q ; /usr/bin/killall links -9 -q'"%(hostname))
+                commands.getstatusoutput("/usr/bin/ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 -o PreferredAuthentications=publickey %s '/usr/bin/killall firefox -9 -q ; /usr/bin/killall chrome -9 -q  ; /usr/bin/killall QtWebEngineProc -9 -q ; /usr/bin/killall links -9 -q'"%(hostname))
             
             if check_stayfocusd():
                 logprint('Problem with stayfocusd settings!!')
@@ -285,7 +290,7 @@ def webcheck():
                 time.sleep(60.0)
                         
             teller += 1
-            time.sleep(20.0)
+            time.sleep(10.0)
             
             edit_crontab()
             
