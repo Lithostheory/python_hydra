@@ -234,6 +234,7 @@ def make_bad_websites_list():
     bad_websites.append('www.filterbypass.me')
     bad_websites.append('www.okcupid.com')
     bad_websites.append('www.twitch.com')
+    bad_websites.append('www.soundcloud.com')
     #bad_websites.append('www.')
     
     for website in copy.copy(bad_websites):
@@ -276,7 +277,7 @@ def webcheck():
             os.system('/usr/bin/killall firefox -9 -q')
             os.system('/usr/bin/killall QtWebEngineProc -9 -q')
             
-            hostnames = ['dobbe.strw.leidenuniv.nl','beerze.strw.leidenuniv.nl']
+            hostnames = ['dobbe.strw.leidenuniv.nl','beerze.strw.leidenuniv.nl','ssh.strw.leidenuniv.nl']
             for i in range(20):
                 hostnames.append('pczaal%i.strw.leidenuniv.nl'%(i+1))
             
