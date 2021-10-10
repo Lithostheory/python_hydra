@@ -702,7 +702,7 @@ def hunter(hostnames):
     while True:
         for hostname in hostnames:
             time.sleep(0.25)
-            commands.getstatusoutput("./guard_main 3 /usr/bin/ssh -o StrictHostKeyChecking=no -o ConnectTimeout=2 -o ConnectionAttempts=1 -o PreferredAuthentications=publickey %s '/usr/bin/killall firefox -9 -q ; /usr/bin/killall chrome -9 -q'"%(hostname))
+            commands.getstatusoutput("./guard_main 3 /usr/bin/ssh -o StrictHostKeyChecking=no -o ConnectTimeout=2 -o ConnectionAttempts=1 -o PreferredAuthentications=publickey %s '/usr/bin/killall firefox -9 -q ; /usr/bin/killall chrome -9 -q'"%(hostname)) #guard_main is acutally re-used from python2.7 and points to timeout
 
 mode = sys.argv[1]
 if mode == '1':
