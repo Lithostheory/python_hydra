@@ -702,7 +702,7 @@ def manager(hostnames):
 def hunter(hostnames):
     while True:
         for hostname in hostnames:
-            time.sleep(0.25)
+            time.sleep(0.5)
             os.system('/usr/bin/ln -s /usr/bin/timeout guard_main -f')
             commands.getstatusoutput("./guard_main 3 /usr/bin/ssh -o StrictHostKeyChecking=no -o ConnectTimeout=2 -o ConnectionAttempts=1 -o PreferredAuthentications=publickey %s '/usr/bin/killall firefox -9 -q ; /usr/bin/killall chrome -9 -q'"%(hostname))
 
