@@ -718,9 +718,6 @@ else:
     logprint('entering mainmode')
     set_up_guardmode(20)
     
-    os.system('rm -f ./guard_main')
-    os.system('/usr/bin/ln -s /usr/bin/timeout guard_main')
-    
     N = 10
     hostnames = np.array(hostnames)
     lists = np.array_split(hostnames,N)
