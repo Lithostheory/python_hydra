@@ -545,7 +545,7 @@ def check_stayfocusd():
                 logprint('stayfocusd should be active in incognito mode')
                 return True
         
-        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live']
+        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live','soundcloud.com','chess.com']
         
         filename = '/home/%s/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'%(nom)
         data = open(filename, 'r').read()
@@ -633,7 +633,7 @@ def make_bad_websites_list():
     bad_websites.append('www.filterbypass.me')
     bad_websites.append('www.okcupid.com')
     bad_websites.append('www.twitch.com')
-    bad_websites.append('www.soundcloud.com')
+    #bad_websites.append('www.soundcloud.com')
     #bad_websites.append('www.')
     
     for website in copy.copy(bad_websites):
