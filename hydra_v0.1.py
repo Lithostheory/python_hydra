@@ -545,7 +545,7 @@ def check_stayfocusd():
                 logprint('stayfocusd should be active in incognito mode')
                 return True
         
-        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live','soundcloud.com','chess.com']
+        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live','soundcloud.com','chess.com','lichess.org']
         
         filename = '/home/%s/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'%(nom)
         data = open(filename, 'r').read()
