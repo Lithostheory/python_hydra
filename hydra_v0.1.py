@@ -12,6 +12,7 @@ from datetime import datetime
 import json
 import commands
 from multiprocessing import Pool
+import glob
 
 
 nom = ''
@@ -595,7 +596,18 @@ def check_stayfocusd():
             logprint('Still %i seconds available today, make this zero'%(available))
             return True
         
-        return False
+        
+        
+        datadir = '/home/%s/.config/google-chrome/Default/Local Extension Settings/cfhdojbkjhnklbpkdaibdccddilifddb/'%(nom)
+        filename = glob.glob(datadir+'*.log')[0]
+        data = open(filename, 'r').read()
+        
+        if not('||ytimg.com^$domain=~youtube.com' in data) and not('||youtube.com^$third-party' in data):
+            logprint('"||ytimg.com^$domain=~youtube.com" and "||youtube.com^$third-party" should be added to adblock_plus "my filter list"')
+            return True
+        
+        
+        return False #all is fine :)
     except Exception as error: #to be safe
         logprint(repr(error))
         return False
