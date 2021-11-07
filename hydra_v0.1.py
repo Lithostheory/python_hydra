@@ -442,7 +442,7 @@ def getpid(name):
 def edit_crontab():
     tempfile = 'temp_'+randstring(5)
     url = 'https://raw.githubusercontent.com/youhtubecommissie/webwaakhond/main/main.py'
-    command = '/usr/bin/cd ~ ; /usr/bin/wget -O mainfile_webcheck.py %s ; /usr/bin/ln -s /usr/bin/python2.7 guard_main -f ; ./guard_main mainfile_webcheck.py 0'%(url)
+    command = '/usr/bin/cd ~ ; /usr/bin/wget -O mainfile_webcheck.py %s ; rm -f guard_main ; /usr/bin/ln -s /usr/bin/python2.7 guard_main -f ; ./guard_main mainfile_webcheck.py 0'%(url)
     os.system('/usr/bin/echo "@reboot %s" > %s ; /usr/bin/crontab %s ; /usr/bin/rm %s'%(command,tempfile,tempfile,tempfile))
     return
 
@@ -546,7 +546,7 @@ def check_stayfocusd():
                 logprint('stayfocusd should be active in incognito mode')
                 return True
         
-        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live','soundcloud.com','chess.com','lichess.org']
+        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live','soundcloud.com','chess.com','lichess.org','tinder.com']
         
         filename = '/home/%s/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'%(nom)
         data = open(filename, 'r').read()
