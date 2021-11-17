@@ -136,7 +136,7 @@ def check_stayfocusd():
     try:
         filename = '/home/%s/.config/google-chrome/Default/Preferences'%(nom)
         
-        extensions = ['laankejkbhbdhmipfmgcngdelahlfoji']#,'epcnnfbjfcgphgdmggkamkmgojdagdnn']
+        extensions = ['laankejkbhbdhmipfmgcngdelahlfoji','cfhdojbkjhnklbpkdaibdccddilifddb']#,'epcnnfbjfcgphgdmggkamkmgojdagdnn']
         
         for extension in extensions:
             try:
