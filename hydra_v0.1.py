@@ -152,8 +152,8 @@ def check_stayfocusd():
                         logprint('%s should be active in incognito mode'%(extension))
                         return True
             except Exception as error:
-                logprint('%s should be installed!')
-                logprint(error)
+                logprint('%s should be installed!'%(extension))
+                logprint(repr(error))
                 return True
         
         toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live','soundcloud.com','chess.com','lichess.org','tinder.com']
