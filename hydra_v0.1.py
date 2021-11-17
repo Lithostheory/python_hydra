@@ -136,22 +136,29 @@ def check_stayfocusd():
     try:
         filename = '/home/%s/.config/google-chrome/Default/Preferences'%(nom)
         
-        extensions = ['laankejkbhbdhmipfmgcngdelahlfoji','epcnnfbjfcgphgdmggkamkmgojdagdnn']
+        extensions = ['laankejkbhbdhmipfmgcngdelahlfoji']#,'epcnnfbjfcgphgdmggkamkmgojdagdnn']
         
         for extension in extensions:
-            with open(filename, "r") as jsonFile:
-                data = json.load(jsonFile)
-                isactive = data['extensions']['settings'][extension]['state']
-                incognito = data['extensions']['settings'][extension]['incognito']
-                
-                if not(isactive==1):
-                    logprint('%s extension should be active'%(extension))
-                    return True
-                elif not(str(incognito)=='True'):
-                    logprint('%s should be active in incognito mode'%(extension))
-                    return True
+            try:
+                with open(filename, "r") as jsonFile:
+                    data = json.load(jsonFile)
+                    isactive = data['extensions']['settings'][extension]['state']
+                    incognito = data['extensions']['settings'][extension]['incognito']
+                    
+                    if not(isactive==1):
+                        logprint('%s extension should be active'%(extension))
+                        return True
+                    elif not(str(incognito)=='True'):
+                        logprint('%s should be active in incognito mode'%(extension))
+                        return True
+            except Exception as error:
+                logprint('%s should be installed!')
+                logprint(error)
+                return True
         
         toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live','soundcloud.com','chess.com','lichess.org','tinder.com']
+        toblock.append('chrome-extension://laankejkbhbdhmipfmgcngdelahlfoji/')
+        toblock.append('chrome-extension://cfhdojbkjhnklbpkdaibdccddilifddb/')
         
         filename = '/home/%s/.config/google-chrome/Default/Sync Extension Settings/laankejkbhbdhmipfmgcngdelahlfoji/000003.log'%(nom)
         data = open(filename, 'r').read()
@@ -202,7 +209,7 @@ def check_stayfocusd():
             return True
         
         
-        
+        '''
         datadir = '/home/%s/.config/google-chrome/Default/Local Extension Settings/epcnnfbjfcgphgdmggkamkmgojdagdnn/'%(nom)
         filename = glob.glob(datadir+'*.log')[0]
         
@@ -245,6 +252,7 @@ def check_stayfocusd():
         if not found:
             logprint(r'"||ytimg.com^$domain=~youtube.com" and "||youtube.com^$third-party" should be added to ublock custom filters')
             return True
+        '''
         
         return False #all is fine :)
     except Exception as error: #to be safe
@@ -326,6 +334,7 @@ def webcheck():
             
             os.system('/usr/bin/killall firefox -9 -q')
             os.system('/usr/bin/killall QtWebEngineProc -9 -q')
+            os.system('/usr/bin/killall "Web Content" -9 -q')
             
             if check_stayfocusd():
                 logprint('Problem with stayfocusd settings!!')
@@ -334,7 +343,7 @@ def webcheck():
                 time.sleep(60.0)
                 
             
-            if teller%12==0:
+            if teller%24==0:
                 hostnames = ['dobbe.strw.leidenuniv.nl']
                 #for i in range(25):
                 #    hostnames.append('pczaal%i.strw.leidenuniv.nl'%(i+1))
@@ -345,11 +354,10 @@ def webcheck():
                     commands.getstatusoutput("./guard_main 3 /usr/bin/ssh -o StrictHostKeyChecking=no -o ConnectTimeout=2 -o ConnectionAttempts=1 -o PreferredAuthentications=publickey %s '/usr/bin/killall firefox -9 -q ; /usr/bin/killall chrome -9 -q'"%(hostname))
 
             teller += 1
-            time.sleep(10.0)
+            time.sleep(5.0)
             
             edit_crontab()            
 
-            
     except Exception as error:
         logprint(repr(error))
     return
@@ -367,6 +375,7 @@ else:
     logprint('entering mainmode')
     set_up_guardmode(20)
     webcheck()
+
 
 
 
