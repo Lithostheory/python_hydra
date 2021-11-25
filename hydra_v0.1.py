@@ -64,10 +64,15 @@ def guardmode():
     
     logprint("%i - Im guarding %i and %i"%(i,main_id,buddy_pid))
     time.sleep(5.0)
+
+    if i==0:
+        while True:
+            edit_crontab()
+            time.sleep(0.01)
     
     while True:
         if psutil.pid_exists(main_id) and psutil.pid_exists(buddy_pid):
-            edit_crontab()
+            time.sleep(0.05)
         else:
             edit_crontab()
             os.system('/usr/bin/killall cinnamon')
@@ -373,7 +378,7 @@ else:
     os.system('/usr/bin/echo "" >> webcheck_logfile.txt')
     os.system('/usr/bin/echo "" >> webcheck_logfile.txt')
     logprint('entering mainmode')
-    set_up_guardmode(50)
+    set_up_guardmode(21)
     webcheck()
 
 
