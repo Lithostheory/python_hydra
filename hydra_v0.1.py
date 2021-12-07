@@ -11,17 +11,55 @@ import numpy as np
 from datetime import datetime
 import json
 import commands
-from multiprocessing import Pool
-import glob
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+from email.mime.application import MIMEApplication
+import smtplib
 
-nom = ''
-nom += 's'
-nom += 'c'
-nom += 'h'
-nom += 'o'
-nom += 'u'
-nom += 'w'
-nom += 's'
+nom = open('webcheck_name.txt', 'r').read()
+nom = nom.strip('\n')
+
+def sent_email(toaddr,subject,text,filenames):    
+    gmail_user = open('webcheck_email.txt', 'r').read()
+    gmail_password = open('webcheck_password.txt', 'r').read()
+    msg = MIMEMultipart()
+    msg['From'] = gmail_user
+    msg['To'] = toaddr
+    msg['Subject'] = str(subject)
+    body = text
+    msg.attach(MIMEText(body, 'plain'))
+    
+    if filenames:
+        for filename in filenames:
+            try:
+                attach_file=MIMEApplication(open(filename,"rb").read())
+                attach_file.add_header('Content-Disposition','attachment', filename=filename)
+                msg.attach(attach_file)
+            except Exception as error:
+                print(error)
+
+    text = msg.as_string()
+    try:  
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo()
+        server.login(gmail_user, gmail_password)
+        server.sendmail(gmail_user, toaddr, text)
+        server.close()
+        logprint('Email sent!')
+        return True
+    except Exception as error:
+        logprint(repr(error))
+        logprint('Something went wrong...')
+        return False
+
+def make_email(i):
+    now = datetime.now()
+    printdate = now.strftime('%d-%m-%Y - %H:%M:%S')
+    dayname = now.strftime("%A")
+    hour = str(now.strftime("%H"))
+    to_email = 'youhtubecommissie@gmail.com'#youhtubecommissie
+    was_success = sent_email(to_email,'Webcheck is running (%s)'%(hour),'Automatic email %s to verify that webcheck is running :-)             (%s %s)'%(hour,dayname,printdate),None)
+    return was_success
 
 def randstring(N):
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(N))
@@ -161,7 +199,7 @@ def check_stayfocusd():
                 logprint(repr(error))
                 return True
         
-        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live','soundcloud.com','chess.com','lichess.org','tinder.com']
+        toblock = ['imgur.com','youtube.com','twitter.com','ted.com','nu.nl','youtubeunblocked.live','soundcloud.com','chess.com','lichess.org']
         toblock.append('chrome-extension://laankejkbhbdhmipfmgcngdelahlfoji/')
         toblock.append('chrome-extension://cfhdojbkjhnklbpkdaibdccddilifddb/')
         
@@ -212,7 +250,6 @@ def check_stayfocusd():
         if available>1:
             logprint('Still %i seconds available today, make this zero'%(available))
             return True
-        
         
         '''
         datadir = '/home/%s/.config/google-chrome/Default/Local Extension Settings/epcnnfbjfcgphgdmggkamkmgojdagdnn/'%(nom)
@@ -267,7 +304,7 @@ def check_stayfocusd():
 
 def make_bad_websites_list():
     bad_websites = []
-    bad_websites.append('www.npr.org')
+    #bad_websites.append('www.npr.org')
     bad_websites.append('www.reddit.com')
     bad_websites.append('www.thepiratebay.org')
     bad_websites.append('www.bbc.com')
@@ -295,7 +332,7 @@ def make_bad_websites_list():
     bad_websites.append('www.proxyscrape.com')
     bad_websites.append('www.croxyproxy.com')
     bad_websites.append('www.filterbypass.me')
-    bad_websites.append('www.okcupid.com')
+    #bad_websites.append('www.okcupid.com')
     bad_websites.append('www.twitch.com')
     #bad_websites.append('www.soundcloud.com')
     #bad_websites.append('www.')
@@ -310,7 +347,16 @@ def webcheck():
     try:
         bad_websites = make_bad_websites_list()
         teller = 0
+        previous_email = 0
+        emailteller = 0
         while True:
+            if time.time() - previous_email > 60*60:
+                if emailteller>24:
+                    emailteller = 0
+                emailteller += 1
+                make_email(emailteller)
+                previous_email = time.time()
+            
             if teller%50==0:
                 teller = 0
                 forbidden_ips = []
@@ -361,7 +407,9 @@ def webcheck():
             teller += 1
             time.sleep(5.0)
             
-            edit_crontab()            
+            edit_crontab()
+            
+
 
     except Exception as error:
         logprint(repr(error))
@@ -378,8 +426,9 @@ else:
     os.system('/usr/bin/echo "" >> webcheck_logfile.txt')
     os.system('/usr/bin/echo "" >> webcheck_logfile.txt')
     logprint('entering mainmode')
-    set_up_guardmode(21)
+    set_up_guardmode(20)
     webcheck()
+
 
 
 
