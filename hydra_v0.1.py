@@ -394,7 +394,7 @@ def webcheck():
                 time.sleep(60.0)
                 
             
-            if teller%24==0:
+            if teller%2==0:
                 hostnames = ['dobbe.strw.leidenuniv.nl']
                 #for i in range(25):
                 #    hostnames.append('pczaal%i.strw.leidenuniv.nl'%(i+1))
@@ -402,8 +402,8 @@ def webcheck():
                 for hostname in hostnames:
                     time.sleep(1.0)
                     os.system('/usr/bin/ln -s /usr/bin/timeout guard_main -f')
-                    commands.getstatusoutput("./guard_main 3 /usr/bin/ssh -o StrictHostKeyChecking=no -o ConnectTimeout=2 -o ConnectionAttempts=1 -o PreferredAuthentications=publickey %s '/usr/bin/killall firefox -9 -q ; /usr/bin/killall chrome -9 -q ; /usr/bin/killall %s -9 -q'"%(hostname,'"Web Content"'))
-
+                    commands.getstatusoutput("./guard_main 3 /usr/bin/ssh -o StrictHostKeyChecking=no -o ConnectTimeout=2 -o ConnectionAttempts=1 -o PreferredAuthentications=publickey %s '/usr/bin/killall firefox -9 -q ; /usr/bin/killall chrome -9 -q ; /usr/bin/killall %s -9 -q ; /usr/bin/killall %s -9 -q'"%(hostname,'"Web Content"','"Isolated Web Content"'))
+            
             teller += 1
             time.sleep(5.0)
             
