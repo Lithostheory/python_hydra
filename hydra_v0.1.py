@@ -386,6 +386,7 @@ def webcheck():
             os.system('/usr/bin/killall firefox -9 -q')
             os.system('/usr/bin/killall QtWebEngineProc -9 -q')
             os.system('/usr/bin/killall "Web Content" -9 -q')
+            os.system('/usr/bin/killall "Isolated Web Content" -9 -q')
             
             if check_stayfocusd():
                 logprint('Problem with stayfocusd settings!!')
